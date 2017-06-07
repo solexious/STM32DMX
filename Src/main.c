@@ -55,6 +55,7 @@ UART_HandleTypeDef huart2;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_NVIC_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -92,6 +93,9 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
 
+  /* Initialize interrupts */
+  MX_NVIC_Init();
+
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -110,28 +114,22 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	  if(data[3] >= 255){
-		  data[3] = 0;
+	  if(HAL_UART_GetState(&huart2) == HAL_UART_STATE_READY){
+		  if(data[3] >= 255){
+			  data[3] = 0;
+		  }
+		  else{
+			  data[3] = data[3] + 1;
+		  }
+		  Delay(3000);
+
+		  huart2.Init.BaudRate = 125000;
+		  HAL_UART_Init(&huart2);
+		  HAL_UART_Transmit(&huart2, (uint8_t*)0, 1, 1000);
+		  huart2.Init.BaudRate = 250000;
+		  HAL_UART_Init(&huart2);
+		  HAL_UART_Transmit_IT(&huart2, data, 500);
 	  }
-	  else{
-		  data[3] = data[3] + 1;
-	  }
-	  huart2.Init.BaudRate = 125000;
-	  HAL_UART_Init(&huart2);
-	  HAL_UART_Transmit(&huart2, (uint8_t*)0, 1, 1000);
-	  huart2.Init.BaudRate = 250000;
-	  HAL_UART_Init(&huart2);
-//	  huart2.Instance->BRR = UART_BRR_SAMPLING8(HAL_RCC_GetPCLK1Freq(), huart2.Init.BaudRate);
-//		__HAL_UART_DISABLE(&huart2);
-//		huart2.Instance->CR1 &=  ~USART_CR1_UE;
-//		huart2.Instance->BRR = UART_BRR_SAMPLING8(HAL_RCC_GetPCLK1Freq(), huart2.Init.BaudRate);
-//		CLEAR_BIT(huart2.Instance->CR2, (USART_CR2_LINEN | USART_CR2_CLKEN));
-//		CLEAR_BIT(huart2.Instance->CR3, (USART_CR3_SCEN | USART_CR3_HDSEL | USART_CR3_IREN));
-//		huart2.Instance->CR1 |=  USART_CR1_UE;
-//		__HAL_UART_ENABLE(&huart2);
-	  HAL_UART_Transmit(&huart2, data, 513, 10000);
-//	  HAL_UART_Transmit(&huart2, data, 4, 10000);
-	  Delay(3000);
   }
   /* USER CODE END 3 */
 
@@ -191,6 +189,15 @@ void SystemClock_Config(void)
 
   /* SysTick_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+}
+
+/** NVIC Configuration
+*/
+static void MX_NVIC_Init(void)
+{
+  /* USART2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(USART2_IRQn);
 }
 
 /* USART2 init function */
