@@ -98,12 +98,40 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  uint8_t data[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+//  uint8_t data[] = {0,0,0,255};
+//  uint8_t data[513];
+//  for(uint8_t a = 0; a < 513; a++){
+//	  data[a] = 0;
+//  }
   while (1)
   {
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-
+	  if(data[3] >= 255){
+		  data[3] = 0;
+	  }
+	  else{
+		  data[3] = data[3] + 1;
+	  }
+	  huart2.Init.BaudRate = 125000;
+	  HAL_UART_Init(&huart2);
+	  HAL_UART_Transmit(&huart2, (uint8_t*)0, 1, 1000);
+	  huart2.Init.BaudRate = 250000;
+	  HAL_UART_Init(&huart2);
+//	  huart2.Instance->BRR = UART_BRR_SAMPLING8(HAL_RCC_GetPCLK1Freq(), huart2.Init.BaudRate);
+//		__HAL_UART_DISABLE(&huart2);
+//		huart2.Instance->CR1 &=  ~USART_CR1_UE;
+//		huart2.Instance->BRR = UART_BRR_SAMPLING8(HAL_RCC_GetPCLK1Freq(), huart2.Init.BaudRate);
+//		CLEAR_BIT(huart2.Instance->CR2, (USART_CR2_LINEN | USART_CR2_CLKEN));
+//		CLEAR_BIT(huart2.Instance->CR3, (USART_CR3_SCEN | USART_CR3_HDSEL | USART_CR3_IREN));
+//		huart2.Instance->CR1 |=  USART_CR1_UE;
+//		__HAL_UART_ENABLE(&huart2);
+	  HAL_UART_Transmit(&huart2, data, 513, 10000);
+//	  HAL_UART_Transmit(&huart2, data, 4, 10000);
+	  Delay(3000);
   }
   /* USER CODE END 3 */
 
@@ -170,11 +198,11 @@ static void MX_USART2_UART_Init(void)
 {
 
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 250000;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.StopBits = UART_STOPBITS_2;
   huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.Mode = UART_MODE_TX;
   huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart2.Init.OverSampling = UART_OVERSAMPLING_16;
   if (HAL_UART_Init(&huart2) != HAL_OK)
@@ -191,11 +219,17 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
 }
 
 /* USER CODE BEGIN 4 */
-
+void Delay(__IO uint32_t nCount)
+{
+  while(nCount--)
+  {
+  }
+}
 /* USER CODE END 4 */
 
 /**

@@ -623,7 +623,8 @@ HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, u
   /* Check that a Tx process is not already ongoing */
   if(huart->gState == HAL_UART_STATE_READY) 
   {
-    if((pData == NULL ) || (Size == 0)) 
+//	if((pData == NULL ) || (Size == 0))
+	if(Size == 0)
     {
       return  HAL_ERROR;
     }
