@@ -128,7 +128,7 @@ int main(void)
 		  HAL_UART_Transmit(&huart2, (uint8_t*)0, 1, 1000);
 		  huart2.Init.BaudRate = 250000;
 		  HAL_UART_Init(&huart2);
-		  HAL_UART_Transmit_IT(&huart2, data, 500);
+		  HAL_UART_Transmit_IT(&huart2, data, 513);
 	  }
   }
   /* USER CODE END 3 */
